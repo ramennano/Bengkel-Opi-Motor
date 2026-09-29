@@ -15,21 +15,63 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUser = JSON.parse(localStorage.getItem('opi_session'));
         showDashboard();
     }
+
+    // Perbaikan: Eksekusi login saat menekan 'Enter' di input password
+    document.getElementById('password').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    });
+    
+    // Perbaikan: Eksekusi 2FA saat menekan 'Enter' di input 2FA
+    document.getElementById('twofa-pin').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            verify2FA();
+        }
+    });
 });
 
-// Autentikasi
+// Autentikasi (Telah Diperbaiki)
 async function handleLogin() {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value.trim();
+    const btnLogin = document.getElementById('btn-login');
 
-    const { data, error } = await supabase.from('app_users').select('*').eq('username', user).eq('password', pass).single();
-    
-    if (data) {
-        currentUser = data;
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('twofa-section').classList.remove('hidden');
-    } else {
-        alert("Username atau password salah!");
+    // Validasi input tidak boleh kosong
+    if (!user || !pass) {
+        alert("Username dan Password tidak boleh kosong!");
+        return;
+    }
+
+    // Ubah status tombol menjadi loading
+    btnLogin.innerText = "Memproses...";
+    btnLogin.disabled = true;
+    btnLogin.style.cursor = "not-allowed";
+
+    try {
+        const { data, error } = await supabase
+            .from('app_users')
+            .select('*')
+            .eq('username', user)
+            .eq('password', pass)
+            .single();
+        
+        if (error) {
+            alert("Username atau password salah!");
+            console.error(error.message);
+        } else if (data) {
+            currentUser = data;
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('twofa-section').classList.remove('hidden');
+        }
+    } catch (err) {
+        alert("Terjadi kesalahan jaringan/server.");
+        console.error(err);
+    } finally {
+        // Kembalikan status tombol
+        btnLogin.innerText = "Masuk";
+        btnLogin.disabled = false;
+        btnLogin.style.cursor = "pointer";
     }
 }
 
