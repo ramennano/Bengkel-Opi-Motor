@@ -16,14 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
         showDashboard();
     }
 
-    // Perbaikan: Eksekusi login saat menekan 'Enter' di input password
+    // Eksekusi fungsi Login jika menekan tombol 'Enter' di kolom password
     document.getElementById('password').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             handleLogin();
         }
     });
-    
-    // Perbaikan: Eksekusi 2FA saat menekan 'Enter' di input 2FA
+
+    // Eksekusi fungsi 2FA jika menekan tombol 'Enter' di kolom PIN
     document.getElementById('twofa-pin').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             verify2FA();
@@ -31,22 +31,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Autentikasi (Telah Diperbaiki)
+// Autentikasi (Sudah Diperbaiki)
 async function handleLogin() {
     const user = document.getElementById('username').value.trim();
     const pass = document.getElementById('password').value.trim();
     const btnLogin = document.getElementById('btn-login');
 
-    // Validasi input tidak boleh kosong
+    // Validasi kosong
     if (!user || !pass) {
-        alert("Username dan Password tidak boleh kosong!");
+        alert("Username dan Password harus diisi!");
         return;
     }
 
-    // Ubah status tombol menjadi loading
+    // Ubah tombol jadi status memproses agar tidak bisa di-klik ganda
     btnLogin.innerText = "Memproses...";
     btnLogin.disabled = true;
-    btnLogin.style.cursor = "not-allowed";
 
     try {
         const { data, error } = await supabase
@@ -54,24 +53,24 @@ async function handleLogin() {
             .select('*')
             .eq('username', user)
             .eq('password', pass)
-            .single();
+            .single(); // .single() digunakan karena kita hanya mencari 1 data spesifik
         
-        if (error) {
+        if (error || !data) {
             alert("Username atau password salah!");
-            console.error(error.message);
-        } else if (data) {
+            console.error(error ? error.message : "Tidak ditemukan data.");
+        } else {
+            // Berhasil login
             currentUser = data;
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('twofa-section').classList.remove('hidden');
         }
     } catch (err) {
-        alert("Terjadi kesalahan jaringan/server.");
+        alert("Terjadi kesalahan sistem/jaringan.");
         console.error(err);
     } finally {
-        // Kembalikan status tombol
+        // Kembalikan tombol ke keadaan semula
         btnLogin.innerText = "Masuk";
         btnLogin.disabled = false;
-        btnLogin.style.cursor = "pointer";
     }
 }
 
