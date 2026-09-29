@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opi Motor - Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="dynamic-wallpaper" class="wallpaper-bg"></div>
+
+    <!-- Halaman Login -->
+    <div id="login-section" class="container">
+        <div class="card login-card">
+            <img id="login-logo" src="" alt="Opi Motor Logo" style="display:none; max-height: 80px; margin: 0 auto 20px;">
+            <h2>Login Bengkel Opi Motor</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="handleLogin()">Masuk</button>
+        </div>
+    </div>
+
+    <!-- Halaman 2FA -->
+    <div id="twofa-section" class="container hidden">
+        <div class="card login-card">
+            <h2>Verifikasi 2FA</h2>
+            <p>Masukkan 6 digit PIN keamanan Anda.</p>
+            <input type="password" id="twofa-pin" placeholder="PIN 2FA" maxlength="6">
+            <button onclick="verify2FA()">Verifikasi</button>
+            <button onclick="cancelLogin()" class="btn-danger">Batal</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Utama -->
+    <div id="dashboard-section" class="dashboard hidden">
+        <aside class="sidebar">
+            <img id="dash-logo" src="" alt="Logo" class="dash-logo" style="display:none;">
+            <h2 style="color:white; text-align:center; margin-bottom: 20px;">Opi Motor</h2>
+            <nav>
+                <a href="#" onclick="showTab('tab-sparepart')">📦 Stok Spare Part</a>
+                <a href="#" onclick="showTab('tab-invoice')">🧾 Cetak Invoice</a>
+                <a href="#" id="menu-users" class="admin-only" onclick="showTab('tab-users')">👥 Kelola User & 2FA</a>
+                <a href="#" id="menu-settings" class="admin-only" onclick="showTab('tab-settings')">⚙️ Pengaturan Web</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p id="op-hours" style="color:#aaa; font-size:12px; text-align:center;"></p>
+                <button onclick="logout()" class="btn-danger" style="margin-top: 10px; width: 100%;">Logout</button>
+            </div>
+        </aside>
+
+        <main class="content">
+            <!-- Tab Spare Part -->
+            <div id="tab-sparepart" class="tab-content active">
+                <h2>Manajemen Spare Part</h2>
+                <div class="admin-only form-group card">
+                    <input type="text" id="sp-name" placeholder="Nama Barang">
+                    <input type="number" id="sp-price" placeholder="Harga (Rp)">
+                    <input type="number" id="sp-stock" placeholder="Stok">
+                    <input type="file" id="sp-image" accept="image/*">
+                    <button onclick="addSparePart()">Tambah Barang</button>
+                </div>
+                <div class="grid" id="sparepart-list"></div>
+            </div>
+
+            <!-- Tab Invoice -->
+            <div id="tab-invoice" class="tab-content hidden">
+                <h2>Kasir & Invoice</h2>
+                <div class="card no-print">
+                    <select id="invoice-item"></select>
+                    <input type="number" id="invoice-qty" placeholder="Jumlah" value="1" min="1">
+                    <button onclick="addToInvoice()">Tambah ke Nota</button>
+                </div>
+                
+                <div id="print-area" class="card invoice-paper">
+                    <div style="text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 10px; margin-bottom: 10px;">
+                        <h2>BENGKEL OPI MOTOR</h2>
+                        <p id="invoice-hours"></p>
+                    </div>
+                    <table style="width: 100%; text-align: left;" id="invoice-table">
+                        <thead><tr><th>Barang</th><th>Qty</th><th>Harga</th><th>Subtotal</th></tr></thead>
+                        <tbody id="invoice-body"></tbody>
+                    </table>
+                    <h3 style="text-align: right; margin-top: 20px;">Total: Rp <span id="invoice-total">0</span></h3>
+                    <div class="no-print" style="margin-top:20px;">
+                        <button onclick="window.print()">🖨️ Cetak Invoice</button>
+                        <button onclick="clearInvoice()" class="btn-danger">Hapus Nota</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Kelola User (Admin) -->
+            <div id="tab-users" class="tab-content hidden">
+                <h2>Kelola Pengguna & 2FA</h2>
+                <div class="card">
+                    <input type="text" id="new-username" placeholder="Username Baru">
+                    <input type="password" id="new-password" placeholder="Password">
+                    <select id="new-role">
+                        <option value="user">Kasir / User</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                    <button onclick="addUser()">Tambah User</button>
+                </div>
+                <table class="data-table">
+                    <thead><tr><th>Username</th><th>Role</th><th>Status 2FA</th><th>Aksi</th></tr></thead>
+                    <tbody id="users-list"></tbody>
+                </table>
+            </div>
+
+            <!-- Tab Settings (Admin) -->
+            <div id="tab-settings" class="tab-content hidden">
+                <h2>Pengaturan Web</h2>
+                <div class="card">
+                    <label>Jam Operasional</label>
+                    <input type="text" id="set-hours">
+                    <label>Upload Logo Baru</label>
+                    <input type="file" id="set-logo" accept="image/*">
+                    <label>Upload Wallpaper Baru</label>
+                    <input type="file" id="set-wallpaper" accept="image/*">
+                    <button onclick="saveSettings()">Simpan Pengaturan</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

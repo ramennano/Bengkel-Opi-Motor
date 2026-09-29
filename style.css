@@ -1,0 +1,51 @@
+:root {
+    --primary: #e63946;
+    --secondary: #1d3557;
+    --bg-color: #f1faee;
+    --text-dark: #333;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: var(--bg-color); color: var(--text-dark); min-height: 100vh; position: relative;}
+
+.wallpaper-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover; background-position: center; z-index: -1;
+    filter: brightness(0.4);
+}
+
+.hidden { display: none !important; }
+.container { display: flex; justify-content: center; align-items: center; height: 100vh; }
+.card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 400px; margin-bottom: 20px;}
+
+input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+button { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s;}
+button:hover { background: #d62828; }
+.btn-danger { background: #6c757d; }
+.btn-danger:hover { background: #495057; }
+
+/* Dashboard Layout */
+.dashboard { display: flex; height: 100vh; background: rgba(255,255,255,0.95); }
+.sidebar { width: 250px; background: var(--secondary); padding: 20px; display: flex; flex-direction: column; }
+.sidebar a { color: white; text-decoration: none; padding: 12px; display: block; border-radius: 5px; margin-bottom: 5px; }
+.sidebar a:hover { background: rgba(255,255,255,0.1); }
+.sidebar-footer { margin-top: auto; }
+.dash-logo { width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 10px; border-radius: 8px;}
+
+.content { flex: 1; padding: 30px; overflow-y: auto; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.item-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+.item-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 5px; }
+
+.data-table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px;}
+.data-table th, .data-table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+.data-table th { background: var(--secondary); color: white; }
+
+.invoice-paper { max-width: 600px; margin: 0 auto; background: white; }
+
+/* Print Styles */
+@media print {
+    body * { visibility: hidden; }
+    #print-area, #print-area * { visibility: visible; }
+    #print-area { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none;}
+    .no-print { display: none !important; }
+}
